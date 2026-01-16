@@ -4,7 +4,6 @@ import { Trophy, RefreshCw, ArrowRight, Target, Plus, X, Home, Minus, Divide } f
 /**
  * REKEN CHALLENGE - Educatieve app voor kinderen
  * Versie: Frameloos met sticky header en Challenge branding
- * Update: X-icoon verplaatst naar de rechter-onderhoek van de header.
  */
 
 export default function App() {
@@ -336,27 +335,23 @@ export default function App() {
         .no-spinner {
           -moz-appearance: textfield;
         }
-
         @keyframes shake {
           0%, 100% { transform: translateX(0); }
           25% { transform: translateX(-8px); }
           75% { transform: translateX(8px); }
         }
         .animate-shake { animation: shake 0.2s ease-in-out 0s 2; }
-
         @keyframes pop-in {
           0% { transform: scale(0.8); opacity: 0; }
           70% { transform: scale(1.05); }
           100% { transform: scale(1); opacity: 1; }
         }
         .animate-pop-in { animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-
         @keyframes bounce-subtle {
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-5px); }
         }
         .animate-bounce-subtle { animation: bounce-subtle 2s infinite ease-in-out; }
-
         @keyframes fade-in {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
