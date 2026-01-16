@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Trophy, RefreshCw, ArrowRight, Target, Plus, X, Home, Minus, Divide } from 'lucide-react';
 
 /**
  * REKEN CHALLENGE - Educatieve app voor kinderen
- * Versie: Frameloos met sticky header en Challenge branding
+ * Geoptimaliseerd voor mobiele (iOS/Android) ervaring:
+ * - Auto-focus op inputveld
+ * - Numeriek toetsenbord geforceerd
+ * - Automatisch wissen bij foutieve invoer
  */
 
 export default function App() {
@@ -15,6 +18,20 @@ export default function App() {
   const [feedback, setFeedback] = useState(null); // 'correct', 'wrong', null
   const [score, setScore] = useState(0);
   const [illustrationUrl, setIllustrationUrl] = useState('');
+  
+  // Ref voor het inputveld om focus te forceren
+  const inputRef = useRef(null);
+
+  // Focus effect: telkens als de vraag verandert of het spel start
+  useEffect(() => {
+    if (view === 'game' && inputRef.current) {
+      // Kleine timeout helpt iOS om de keyboard focus correct te pakken
+      const timer = setTimeout(() => {
+        inputRef.current.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [view, currentIndex]);
 
   const generateQuestions = (type) => {
     const newQuestions = [];
@@ -70,7 +87,7 @@ export default function App() {
   };
 
   const handleCheck = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!userInput || feedback === 'correct') return;
 
     const currentQ = questions[currentIndex];
@@ -107,6 +124,14 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
+  // Functie om input te wissen als je erop tikt na een fout
+  const handleInputTouch = () => {
+    if (feedback === 'wrong') {
+      setUserInput('');
+      setFeedback(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
       
@@ -116,7 +141,7 @@ export default function App() {
           {view !== 'menu' && (
             <button 
               onClick={reset}
-              className="absolute bottom-2 right-4 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-colors"
+              className="absolute bottom-2 right-4 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-colors active:scale-90"
               title="Terug naar menu"
             >
               <X size={20} />
@@ -142,83 +167,28 @@ export default function App() {
           <div className="space-y-4 pb-10">
             <p className="text-slate-500 text-center font-bold uppercase tracking-wider text-[10px] mb-4">Kies een categorie</p>
             
-            <button 
-              onClick={() => startGame('addition-20')}
-              className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-green-300 active:scale-[0.98]"
-            >
-              <div className="text-left pr-2">
-                <h3 className="text-sm font-bold text-slate-800 leading-tight">Optellen (20)</h3>
-                <p className="text-[10px] text-slate-500 mt-0.5">Sommen tot 20</p>
-              </div>
-              <div className="bg-green-500 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0">
-                <Plus size={18} strokeWidth={3} />
-              </div>
-            </button>
-
-            <button 
-              onClick={() => startGame('addition-100')}
-              className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-emerald-300 active:scale-[0.98]"
-            >
-              <div className="text-left pr-2">
-                <h3 className="text-sm font-bold text-slate-800 leading-tight">Optellen (100)</h3>
-                <p className="text-[10px] text-slate-500 mt-0.5">Sommen tot 100</p>
-              </div>
-              <div className="bg-emerald-500 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0">
-                <Plus size={18} strokeWidth={3} />
-              </div>
-            </button>
-
-            <button 
-              onClick={() => startGame('addition-200')}
-              className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-teal-300 active:scale-[0.98]"
-            >
-              <div className="text-left pr-2">
-                <h3 className="text-sm font-bold text-slate-800 leading-tight">Optellen (200)</h3>
-                <p className="text-[10px] text-slate-500 mt-0.5">Sommen tot 200</p>
-              </div>
-              <div className="bg-teal-600 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0">
-                <Plus size={18} strokeWidth={3} />
-              </div>
-            </button>
-
-            <button 
-              onClick={() => startGame('minus-100')}
-              className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-orange-300 active:scale-[0.98]"
-            >
-              <div className="text-left pr-2">
-                <h3 className="text-sm font-bold text-slate-800 leading-tight">Aftrekken (100)</h3>
-                <p className="text-[10px] text-slate-500 mt-0.5">Min-sommen tot 100</p>
-              </div>
-              <div className="bg-orange-500 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0">
-                <Minus size={18} strokeWidth={3} />
-              </div>
-            </button>
-
-            <button 
-              onClick={() => startGame('multiplication')}
-              className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-blue-300 active:scale-[0.98]"
-            >
-              <div className="text-left pr-2">
-                <h3 className="text-sm font-bold text-slate-800 leading-tight">Vermenigvuldigen</h3>
-                <p className="text-[10px] text-slate-500 mt-0.5">Tafels 1 tot 12</p>
-              </div>
-              <div className="bg-blue-500 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0">
-                <X size={18} strokeWidth={3} />
-              </div>
-            </button>
-
-            <button 
-              onClick={() => startGame('division-12')}
-              className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-purple-300 active:scale-[0.98]"
-            >
-              <div className="text-left pr-2">
-                <h3 className="text-sm font-bold text-slate-800 leading-tight">Delen</h3>
-                <p className="text-[10px] text-slate-500 mt-0.5">Tot 12 ÷ 12</p>
-              </div>
-              <div className="bg-purple-500 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0">
-                <Divide size={18} strokeWidth={3} />
-              </div>
-            </button>
+            {[
+              { id: 'addition-20', title: 'Optellen (20)', sub: 'Sommen tot 20', color: 'bg-green-500', hover: 'hover:border-green-300', icon: Plus },
+              { id: 'addition-100', title: 'Optellen (100)', sub: 'Sommen tot 100', color: 'bg-emerald-500', hover: 'hover:border-emerald-300', icon: Plus },
+              { id: 'addition-200', title: 'Optellen (200)', sub: 'Sommen tot 200', color: 'bg-teal-600', hover: 'hover:border-teal-300', icon: Plus },
+              { id: 'minus-100', title: 'Aftrekken (100)', sub: 'Min-sommen tot 100', color: 'bg-orange-500', hover: 'hover:border-orange-300', icon: Minus },
+              { id: 'multiplication', title: 'Vermenigvuldigen', sub: 'Tafels 1 tot 12', color: 'bg-blue-500', hover: 'hover:border-blue-300', icon: X },
+              { id: 'division-12', title: 'Delen', sub: 'Tot 12 ÷ 12', color: 'bg-purple-500', hover: 'hover:border-purple-300', icon: Divide }
+            ].map((cat) => (
+              <button 
+                key={cat.id}
+                onClick={() => startGame(cat.id)}
+                className={`w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all ${cat.hover} active:scale-[0.98]`}
+              >
+                <div className="text-left pr-2">
+                  <h3 className="text-sm font-bold text-slate-800 leading-tight">{cat.title}</h3>
+                  <p className="text-[10px] text-slate-500 mt-0.5">{cat.sub}</p>
+                </div>
+                <div className={`${cat.color} text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0`}>
+                  <cat.icon size={18} strokeWidth={3} />
+                </div>
+              </button>
+            ))}
           </div>
         )}
 
@@ -240,10 +210,14 @@ export default function App() {
 
               <form onSubmit={handleCheck} className="w-full flex justify-center">
                 <input
-                  autoFocus
-                  type="number"
+                  ref={inputRef}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={userInput}
-                  onChange={(e) => setUserInput(e.target.value)}
+                  onFocus={handleInputTouch}
+                  onClick={handleInputTouch}
+                  onChange={(e) => setUserInput(e.target.value.replace(/\D/g, ''))}
                   disabled={feedback === 'correct'}
                   className={`w-40 text-center text-5xl font-black p-5 rounded-3xl outline-none transition-all no-spinner
                     ${feedback === 'wrong' ? 'text-red-600 bg-red-100' : 'bg-white text-slate-800 shadow-md focus:ring-4 focus:ring-indigo-200'}`}
