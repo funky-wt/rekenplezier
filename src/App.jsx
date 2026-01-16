@@ -3,10 +3,10 @@ import { Trophy, RefreshCw, ArrowRight, Target, Plus, X, Home, Minus, Divide } f
 
 /**
  * REKEN CHALLENGE - Educatieve app voor kinderen
- * Update: Ruimte-optimalisatie voor mobiel.
- * - Marges in de kaart verkleind (py-8 px-4).
- * - Scrollen uitgeschakeld in game-modus om te voorkomen dat de kaart onder de header schuift.
- * - Spatiëring tussen elementen compacter gemaakt.
+ * Update: Vertalingen gecorrigeerd naar het Nederlands.
+ * - 'CHECK' -> 'CONTROLEER'
+ * - 'SKIP' -> 'OVERSLAAN'
+ * - 'VOLGENDE' -> 'VOLGENDE VRAAG'
  */
 
 export default function App() {
@@ -110,7 +110,6 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
-  // Functie om input te legen als er een fout is gemaakt en de gebruiker opnieuw tikt
   const handleInputInteraction = () => {
     if (feedback === 'wrong') {
       setUserInput('');
@@ -119,11 +118,11 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen bg-white flex flex-col font-sans ${view === 'game' ? 'h-screen overflow-hidden' : ''}`}>
+    <div className={`min-h-screen lg:h-screen flex flex-col font-sans bg-slate-50 ${view === 'game' ? 'h-[100dvh] overflow-hidden' : ''}`}>
       
-      {/* Sticky Header */}
-      <header className={`sticky top-0 z-50 bg-indigo-600 shadow-lg text-white transition-all duration-300`}>
-        <div className={`max-w-md mx-auto relative flex flex-col items-center justify-center ${view === 'game' ? 'p-4' : 'p-6'}`}>
+      {/* Header */}
+      <header className={`${view === 'game' ? 'relative' : 'sticky top-0'} z-50 bg-indigo-600 shadow-md text-white transition-all duration-300 shrink-0`}>
+        <div className={`max-w-md mx-auto relative flex flex-col items-center justify-center ${view === 'game' ? 'p-3' : 'p-6'}`}>
           
           {view !== 'menu' && (
             <button 
@@ -151,7 +150,7 @@ export default function App() {
       </header>
 
       {/* Main Content Area */}
-      <main className={`flex-1 w-full max-w-md mx-auto p-6 ${view === 'game' ? 'flex flex-col justify-center' : ''}`}>
+      <main className={`flex-1 w-full max-w-md mx-auto p-4 md:p-6 overflow-y-auto ${view === 'game' ? 'flex flex-col justify-center overflow-hidden' : ''}`}>
         
         {/* VIEW: MENU */}
         {view === 'menu' && (
@@ -169,7 +168,7 @@ export default function App() {
               <button 
                 key={cat.id}
                 onClick={() => startGame(cat.id)} 
-                className={`w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all ${cat.border} active:scale-[0.98]`}
+                className={`w-full group flex items-center justify-between p-4 bg-white border-2 border-slate-100 rounded-2xl transition-all shadow-sm ${cat.border} active:scale-[0.98]`}
               >
                 <div className="text-left pr-2">
                   <h3 className="text-sm font-bold text-slate-800 leading-tight">{cat.label}</h3>
@@ -185,14 +184,14 @@ export default function App() {
 
         {/* VIEW: GAME */}
         {view === 'game' && (
-          <div className="flex flex-col items-center space-y-6 animate-fade-in">
+          <div className="flex flex-col items-center space-y-4 animate-fade-in max-h-full">
             <div 
-              className={`w-full py-8 px-4 rounded-3xl border-4 transition-all duration-300 flex flex-col items-center justify-center gap-6 relative
+              className={`w-full py-4 px-4 md:py-6 rounded-3xl border-4 transition-all duration-300 flex flex-col items-center justify-center gap-3 md:gap-4 relative shadow-lg
               ${feedback === 'correct' ? 'border-green-400 bg-green-50' : 
                 feedback === 'wrong' ? 'border-red-400 bg-red-50 animate-shake' : 
-                'border-slate-100 bg-slate-50'}`}
+                'border-white bg-white'}`}
             >
-              <div className="text-5xl font-black text-slate-800 flex items-center gap-4">
+              <div className="text-4xl md:text-5xl font-black text-slate-800 flex items-center gap-3 md:gap-4">
                 <span>{questions[currentIndex].a}</span>
                 <span className="text-indigo-500">{questions[currentIndex].op}</span>
                 <span>{questions[currentIndex].b}</span>
@@ -213,36 +212,36 @@ export default function App() {
                     setUserInput(val);
                   }}
                   disabled={feedback === 'correct'}
-                  className={`w-36 text-center text-4xl font-black p-4 rounded-3xl outline-none transition-all no-spinner
-                    ${feedback === 'wrong' ? 'text-red-600 bg-red-100' : 'bg-white text-slate-800 shadow-md focus:ring-4 focus:ring-indigo-200'}`}
+                  className={`w-32 md:w-36 text-center text-3xl md:text-4xl font-black p-2 md:p-3 rounded-3xl outline-none transition-all no-spinner
+                    ${feedback === 'wrong' ? 'text-red-600 bg-red-100' : 'bg-slate-50 text-slate-800 shadow-inner focus:ring-4 focus:ring-indigo-200'}`}
                   placeholder="?"
                 />
               </form>
 
               {feedback === 'correct' && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-green-50/95 rounded-3xl animate-pop-in">
-                  <img src={illustrationUrl} alt="Beloning" className="w-24 h-24 rounded-full mb-3 bg-white p-2 shadow-lg border-2 border-green-200" />
-                  <p className="text-green-600 font-black text-lg uppercase tracking-widest text-center px-4">Goed gedaan!</p>
+                  <img src={illustrationUrl} alt="Beloning" className="w-16 h-16 md:w-20 md:h-20 rounded-full mb-2 bg-white p-2 shadow-lg border-2 border-green-200" />
+                  <p className="text-green-600 font-black text-lg uppercase tracking-widest text-center px-4">Goed zo!</p>
                 </div>
               )}
 
               {feedback === 'wrong' && (
-                <p className="text-red-500 text-sm font-bold animate-pulse text-center">Probeer het nog eens!</p>
+                <p className="text-red-500 text-xs font-bold animate-pulse text-center">Nog een keer proberen!</p>
               )}
             </div>
 
             <div className="w-full flex gap-3">
               {feedback !== 'correct' ? (
                 <>
-                  <button onClick={handleCheck} className="flex-[2] bg-indigo-600 text-white py-4 rounded-2xl font-black text-sm shadow-lg hover:bg-indigo-700 active:scale-95 transition-all">
+                  <button onClick={handleCheck} className="flex-[2] bg-indigo-600 text-white py-3 md:py-4 rounded-2xl font-black text-sm shadow-lg hover:bg-indigo-700 active:scale-95 transition-all">
                     CONTROLEER
                   </button>
-                  <button onClick={nextQuestion} className="flex-1 bg-slate-200 text-slate-600 py-4 rounded-2xl font-bold text-xs hover:bg-slate-300 active:scale-95 transition-all flex items-center justify-center gap-1">
+                  <button onClick={nextQuestion} className="flex-1 bg-slate-200 text-slate-600 py-3 md:py-4 rounded-2xl font-bold text-xs hover:bg-slate-300 active:scale-95 transition-all flex items-center justify-center gap-1">
                     OVERSLAAN <ArrowRight size={12} />
                   </button>
                 </>
               ) : (
-                <button onClick={nextQuestion} className="w-full bg-green-500 text-white py-5 rounded-2xl font-black text-base shadow-lg hover:bg-green-600 animate-bounce-subtle flex items-center justify-center gap-3">
+                <button onClick={nextQuestion} className="w-full bg-green-500 text-white py-4 md:py-5 rounded-2xl font-black text-base shadow-lg hover:bg-green-600 animate-bounce-subtle flex items-center justify-center gap-3">
                   VOLGENDE VRAAG <ArrowRight size={20} strokeWidth={3} />
                 </button>
               )}
@@ -252,10 +251,10 @@ export default function App() {
 
         {/* VIEW: RESULTS */}
         {view === 'results' && (
-          <div className="text-center space-y-8 py-4 animate-fade-in">
+          <div className="text-center space-y-6 md:space-y-8 py-4 animate-fade-in">
             <div className="relative inline-block">
-              <div className="bg-yellow-100 p-8 rounded-full animate-bounce-subtle">
-                <Trophy className="w-20 h-20 text-yellow-500 mx-auto" />
+              <div className="bg-yellow-100 p-6 md:p-8 rounded-full animate-bounce-subtle">
+                <Target className="w-16 h-16 md:w-20 md:h-20 text-yellow-500 mx-auto" />
               </div>
               <div className="absolute -top-1 -right-1 bg-indigo-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-black text-lg border-4 border-white shadow-lg">
                 {score}
@@ -263,10 +262,10 @@ export default function App() {
             </div>
             <div className="space-y-2">
               <h2 className="text-3xl font-black text-slate-800 uppercase tracking-tighter">Geweldig!</h2>
-              <p className="text-slate-500 text-lg font-medium">Je hebt er <span className="text-indigo-600 font-bold">{score}</span> van de 10 goed!</p>
+              <p className="text-slate-500 text-lg font-medium">Je score: <span className="text-indigo-600 font-bold">{score}</span> / 10</p>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
               <button onClick={() => startGame(category)} className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-sm shadow-lg hover:bg-indigo-700 active:scale-95 transition-all flex items-center justify-center gap-3">
                 <RefreshCw size={16} /> OPNIEUW SPELEN
               </button>
