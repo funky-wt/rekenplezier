@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Trophy, RefreshCw, ArrowRight, Target, Plus, X, Home, Minus, Divide } from 'lucide-react';
 
 /**
  * REKEN CHALLENGE - Educatieve app voor kinderen
- * Geoptimaliseerd voor mobiele (iOS/Android) ervaring:
- * - Auto-focus op inputveld
- * - Numeriek toetsenbord geforceerd
- * - Automatisch wissen bij foutieve invoer
+ * Optimalisatie: De titel in de header wordt verborgen tijdens gameplay
+ * om meer verticale ruimte vrij te maken op mobiele schermen.
  */
 
 export default function App() {
@@ -18,20 +16,6 @@ export default function App() {
   const [feedback, setFeedback] = useState(null); // 'correct', 'wrong', null
   const [score, setScore] = useState(0);
   const [illustrationUrl, setIllustrationUrl] = useState('');
-  
-  // Ref voor het inputveld om focus te forceren
-  const inputRef = useRef(null);
-
-  // Focus effect: telkens als de vraag verandert of het spel start
-  useEffect(() => {
-    if (view === 'game' && inputRef.current) {
-      // Kleine timeout helpt iOS om de keyboard focus correct te pakken
-      const timer = setTimeout(() => {
-        inputRef.current.focus();
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [view, currentIndex]);
 
   const generateQuestions = (type) => {
     const newQuestions = [];
@@ -87,7 +71,7 @@ export default function App() {
   };
 
   const handleCheck = (e) => {
-    if (e) e.preventDefault();
+    e.preventDefault();
     if (!userInput || feedback === 'correct') return;
 
     const currentQ = questions[currentIndex];
@@ -124,35 +108,35 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
-  // Functie om input te wissen als je erop tikt na een fout
-  const handleInputTouch = () => {
-    if (feedback === 'wrong') {
-      setUserInput('');
-      setFeedback(null);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
       
-      {/* Sticky Header */}
-      <header className="sticky top-0 z-50 bg-indigo-600 shadow-lg text-white">
-        <div className="max-w-md mx-auto p-6 relative flex flex-col items-center justify-center">
+      {/* Sticky Header - De padding en inhoud veranderen op basis van de view */}
+      <header className={`sticky top-0 z-50 bg-indigo-600 shadow-lg text-white transition-all duration-300`}>
+        <div className={`max-w-md mx-auto relative flex flex-col items-center justify-center ${view === 'game' ? 'p-4' : 'p-6'}`}>
+          
+          {/* Alleen de reset knop tonen als we niet in het menu zijn */}
           {view !== 'menu' && (
             <button 
               onClick={reset}
-              className="absolute bottom-2 right-4 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-colors active:scale-90"
+              className={`absolute bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-colors ${view === 'game' ? 'right-4 top-1/2 -translate-y-1/2' : 'bottom-2 right-4'}`}
               title="Terug naar menu"
             >
               <X size={20} />
             </button>
           )}
-          <h1 className="text-2xl font-black tracking-tight flex items-center justify-center gap-2">
-            <Target className="w-6 h-6 text-yellow-300" />
-            REKEN CHALLENGE
-          </h1>
+
+          {/* Titel verbergen als de game gestart is */}
+          {view !== 'game' && (
+            <h1 className="text-2xl font-black tracking-tight flex items-center justify-center gap-2 animate-fade-in">
+              <Target className="w-6 h-6 text-yellow-300" />
+              REKEN CHALLENGE
+            </h1>
+          )}
+
+          {/* Vraag teller compacter weergeven tijdens gameplay */}
           {view === 'game' && (
-            <div className="mt-2 inline-block bg-indigo-500 px-4 py-1 rounded-full text-xs font-bold border border-indigo-400">
+            <div className="inline-block bg-indigo-500 px-4 py-1 rounded-full text-xs font-bold border border-indigo-400 animate-fade-in">
               Vraag {currentIndex + 1} van 10
             </div>
           )}
@@ -167,28 +151,53 @@ export default function App() {
           <div className="space-y-4 pb-10">
             <p className="text-slate-500 text-center font-bold uppercase tracking-wider text-[10px] mb-4">Kies een categorie</p>
             
-            {[
-              { id: 'addition-20', title: 'Optellen (20)', sub: 'Sommen tot 20', color: 'bg-green-500', hover: 'hover:border-green-300', icon: Plus },
-              { id: 'addition-100', title: 'Optellen (100)', sub: 'Sommen tot 100', color: 'bg-emerald-500', hover: 'hover:border-emerald-300', icon: Plus },
-              { id: 'addition-200', title: 'Optellen (200)', sub: 'Sommen tot 200', color: 'bg-teal-600', hover: 'hover:border-teal-300', icon: Plus },
-              { id: 'minus-100', title: 'Aftrekken (100)', sub: 'Min-sommen tot 100', color: 'bg-orange-500', hover: 'hover:border-orange-300', icon: Minus },
-              { id: 'multiplication', title: 'Vermenigvuldigen', sub: 'Tafels 1 tot 12', color: 'bg-blue-500', hover: 'hover:border-blue-300', icon: X },
-              { id: 'division-12', title: 'Delen', sub: 'Tot 12 ÷ 12', color: 'bg-purple-500', hover: 'hover:border-purple-300', icon: Divide }
-            ].map((cat) => (
-              <button 
-                key={cat.id}
-                onClick={() => startGame(cat.id)}
-                className={`w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all ${cat.hover} active:scale-[0.98]`}
-              >
-                <div className="text-left pr-2">
-                  <h3 className="text-sm font-bold text-slate-800 leading-tight">{cat.title}</h3>
-                  <p className="text-[10px] text-slate-500 mt-0.5">{cat.sub}</p>
-                </div>
-                <div className={`${cat.color} text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0`}>
-                  <cat.icon size={18} strokeWidth={3} />
-                </div>
-              </button>
-            ))}
+            <button onClick={() => startGame('addition-20')} className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-green-300 active:scale-[0.98]">
+              <div className="text-left pr-2">
+                <h3 className="text-sm font-bold text-slate-800 leading-tight">Optellen (20)</h3>
+                <p className="text-[10px] text-slate-500 mt-0.5">Sommen tot 20</p>
+              </div>
+              <div className="bg-green-500 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0"><Plus size={18} strokeWidth={3} /></div>
+            </button>
+
+            <button onClick={() => startGame('addition-100')} className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-emerald-300 active:scale-[0.98]">
+              <div className="text-left pr-2">
+                <h3 className="text-sm font-bold text-slate-800 leading-tight">Optellen (100)</h3>
+                <p className="text-[10px] text-slate-500 mt-0.5">Sommen tot 100</p>
+              </div>
+              <div className="bg-emerald-500 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0"><Plus size={18} strokeWidth={3} /></div>
+            </button>
+
+            <button onClick={() => startGame('addition-200')} className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-teal-300 active:scale-[0.98]">
+              <div className="text-left pr-2">
+                <h3 className="text-sm font-bold text-slate-800 leading-tight">Optellen (200)</h3>
+                <p className="text-[10px] text-slate-500 mt-0.5">Sommen tot 200</p>
+              </div>
+              <div className="bg-teal-600 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0"><Plus size={18} strokeWidth={3} /></div>
+            </button>
+
+            <button onClick={() => startGame('minus-100')} className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-orange-300 active:scale-[0.98]">
+              <div className="text-left pr-2">
+                <h3 className="text-sm font-bold text-slate-800 leading-tight">Aftrekken (100)</h3>
+                <p className="text-[10px] text-slate-500 mt-0.5">Min-sommen tot 100</p>
+              </div>
+              <div className="bg-orange-500 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0"><Minus size={18} strokeWidth={3} /></div>
+            </button>
+
+            <button onClick={() => startGame('multiplication')} className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-blue-300 active:scale-[0.98]">
+              <div className="text-left pr-2">
+                <h3 className="text-sm font-bold text-slate-800 leading-tight">Vermenigvuldigen</h3>
+                <p className="text-[10px] text-slate-500 mt-0.5">Tafels 1 tot 12</p>
+              </div>
+              <div className="bg-blue-500 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0"><X size={18} strokeWidth={3} /></div>
+            </button>
+
+            <button onClick={() => startGame('division-12')} className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-purple-300 active:scale-[0.98]">
+              <div className="text-left pr-2">
+                <h3 className="text-sm font-bold text-slate-800 leading-tight">Delen</h3>
+                <p className="text-[10px] text-slate-500 mt-0.5">Tot 12 ÷ 12</p>
+              </div>
+              <div className="bg-purple-500 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0"><Divide size={18} strokeWidth={3} /></div>
+            </button>
           </div>
         )}
 
@@ -210,14 +219,10 @@ export default function App() {
 
               <form onSubmit={handleCheck} className="w-full flex justify-center">
                 <input
-                  ref={inputRef}
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
+                  autoFocus
+                  type="number"
                   value={userInput}
-                  onFocus={handleInputTouch}
-                  onClick={handleInputTouch}
-                  onChange={(e) => setUserInput(e.target.value.replace(/\D/g, ''))}
+                  onChange={(e) => setUserInput(e.target.value)}
                   disabled={feedback === 'correct'}
                   className={`w-40 text-center text-5xl font-black p-5 rounded-3xl outline-none transition-all no-spinner
                     ${feedback === 'wrong' ? 'text-red-600 bg-red-100' : 'bg-white text-slate-800 shadow-md focus:ring-4 focus:ring-indigo-200'}`}
@@ -240,24 +245,15 @@ export default function App() {
             <div className="w-full flex gap-4">
               {feedback !== 'correct' ? (
                 <>
-                  <button 
-                    onClick={handleCheck}
-                    className="flex-[2] bg-indigo-600 text-white py-4 rounded-2xl font-black text-sm shadow-lg hover:bg-indigo-700 active:scale-95 transition-all"
-                  >
+                  <button onClick={handleCheck} className="flex-[2] bg-indigo-600 text-white py-4 rounded-2xl font-black text-sm shadow-lg hover:bg-indigo-700 active:scale-95 transition-all">
                     CONTROLEER
                   </button>
-                  <button 
-                    onClick={nextQuestion}
-                    className="flex-1 bg-slate-200 text-slate-600 py-4 rounded-2xl font-bold text-xs hover:bg-slate-300 active:scale-95 transition-all flex items-center justify-center gap-1"
-                  >
+                  <button onClick={nextQuestion} className="flex-1 bg-slate-200 text-slate-600 py-4 rounded-2xl font-bold text-xs hover:bg-slate-300 active:scale-95 transition-all flex items-center justify-center gap-1">
                     OVERSLAAN <ArrowRight size={12} />
                   </button>
                 </>
               ) : (
-                <button 
-                  onClick={nextQuestion}
-                  className="w-full bg-green-500 text-white py-5 rounded-2xl font-black text-base shadow-lg hover:bg-green-600 animate-bounce-subtle flex items-center justify-center gap-3"
-                >
+                <button onClick={nextQuestion} className="w-full bg-green-500 text-white py-5 rounded-2xl font-black text-base shadow-lg hover:bg-green-600 animate-bounce-subtle flex items-center justify-center gap-3">
                   VOLGENDE VRAAG <ArrowRight size={20} strokeWidth={3} />
                 </button>
               )}
@@ -282,54 +278,28 @@ export default function App() {
             </div>
             
             <div className="space-y-4">
-              <button 
-                onClick={() => startGame(category)}
-                className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-sm shadow-lg hover:bg-indigo-700 active:scale-95 transition-all flex items-center justify-center gap-3"
-              >
+              <button onClick={() => startGame(category)} className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-sm shadow-lg hover:bg-indigo-700 active:scale-95 transition-all flex items-center justify-center gap-3">
                 <RefreshCw size={16} /> OPNIEUW SPELEN
               </button>
-              <button 
-                onClick={reset}
-                className="w-full bg-slate-100 text-slate-600 py-4 rounded-2xl font-bold text-xs hover:bg-slate-200 active:scale-95 transition-all flex items-center justify-center gap-2"
-              >
+              <button onClick={reset} className="w-full bg-slate-100 text-slate-600 py-4 rounded-2xl font-bold text-xs hover:bg-slate-200 active:scale-95 transition-all flex items-center justify-center gap-2">
                 <Home size={14} /> HOOFDMENU
               </button>
             </div>
           </div>
         )}
-
       </main>
 
       <style>{`
         .no-spinner::-webkit-inner-spin-button,
-        .no-spinner::-webkit-outer-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
-        }
-        .no-spinner {
-          -moz-appearance: textfield;
-        }
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-8px); }
-          75% { transform: translateX(8px); }
-        }
+        .no-spinner::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .no-spinner { -moz-appearance: textfield; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
         .animate-shake { animation: shake 0.2s ease-in-out 0s 2; }
-        @keyframes pop-in {
-          0% { transform: scale(0.8); opacity: 0; }
-          70% { transform: scale(1.05); }
-          100% { transform: scale(1); opacity: 1; }
-        }
+        @keyframes pop-in { 0% { transform: scale(0.8); opacity: 0; } 70% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
         .animate-pop-in { animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes bounce-subtle {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-5px); }
-        }
+        @keyframes bounce-subtle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
         .animate-bounce-subtle { animation: bounce-subtle 2s infinite ease-in-out; }
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
       `}</style>
     </div>
