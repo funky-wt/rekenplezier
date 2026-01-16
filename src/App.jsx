@@ -3,10 +3,7 @@ import { Trophy, RefreshCw, ArrowRight, Target, Plus, X, Home, Minus, Divide } f
 
 /**
  * REKEN CHALLENGE - Educatieve app voor kinderen
- * Update: Vertalingen gecorrigeerd naar het Nederlands.
- * - 'CHECK' -> 'CONTROLEER'
- * - 'SKIP' -> 'OVERSLAAN'
- * - 'VOLGENDE' -> 'VOLGENDE VRAAG'
+ * Update: Layout aangepast zodat de kaart aan de bovenkant wordt uitgelijnd.
  */
 
 export default function App() {
@@ -150,7 +147,7 @@ export default function App() {
       </header>
 
       {/* Main Content Area */}
-      <main className={`flex-1 w-full max-w-md mx-auto p-4 md:p-6 overflow-y-auto ${view === 'game' ? 'flex flex-col justify-center overflow-hidden' : ''}`}>
+      <main className={`flex-1 w-full max-w-md mx-auto p-4 md:p-6 overflow-y-auto ${view === 'game' ? 'flex flex-col justify-start pt-8 overflow-hidden' : ''}`}>
         
         {/* VIEW: MENU */}
         {view === 'menu' && (
@@ -266,10 +263,10 @@ export default function App() {
             </div>
             
             <div className="space-y-3 md:space-y-4">
-              <button onClick={() => startGame(category)} className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-sm shadow-lg hover:bg-indigo-700 active:scale-95 transition-all flex items-center justify-center gap-3">
+              <button onClick={() => startGame(category)} className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-sm shadow-lg hover:bg-indigo-700 active:scale-95 flex items-center justify-center gap-3">
                 <RefreshCw size={16} /> OPNIEUW SPELEN
               </button>
-              <button onClick={reset} className="w-full bg-slate-100 text-slate-600 py-4 rounded-2xl font-bold text-xs hover:bg-slate-200 active:scale-95 transition-all flex items-center justify-center gap-2">
+              <button onClick={reset} className="w-full bg-slate-100 text-slate-600 py-4 rounded-2xl font-bold text-xs hover:bg-slate-200 active:scale-95 flex items-center justify-center gap-2">
                 <Home size={14} /> HOOFDMENU
               </button>
             </div>
