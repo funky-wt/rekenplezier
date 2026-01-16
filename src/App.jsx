@@ -3,7 +3,10 @@ import { Trophy, RefreshCw, ArrowRight, Target, Plus, X, Home, Minus, Divide } f
 
 /**
  * REKEN CHALLENGE - Educatieve app voor kinderen
- * Update: Numeriek toetsenbord geforceerd en invoer wissen bij fout.
+ * Update: Ruimte-optimalisatie voor mobiel.
+ * - Marges in de kaart verkleind (py-8 px-4).
+ * - Scrollen uitgeschakeld in game-modus om te voorkomen dat de kaart onder de header schuift.
+ * - Spatiëring tussen elementen compacter gemaakt.
  */
 
 export default function App() {
@@ -116,7 +119,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans">
+    <div className={`min-h-screen bg-white flex flex-col font-sans ${view === 'game' ? 'h-screen overflow-hidden' : ''}`}>
       
       {/* Sticky Header */}
       <header className={`sticky top-0 z-50 bg-indigo-600 shadow-lg text-white transition-all duration-300`}>
@@ -148,7 +151,7 @@ export default function App() {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-md mx-auto p-6">
+      <main className={`flex-1 w-full max-w-md mx-auto p-6 ${view === 'game' ? 'flex flex-col justify-center' : ''}`}>
         
         {/* VIEW: MENU */}
         {view === 'menu' && (
@@ -182,9 +185,9 @@ export default function App() {
 
         {/* VIEW: GAME */}
         {view === 'game' && (
-          <div className="flex flex-col items-center space-y-8 animate-fade-in">
+          <div className="flex flex-col items-center space-y-6 animate-fade-in">
             <div 
-              className={`w-full py-12 px-6 rounded-3xl border-4 transition-all duration-300 flex flex-col items-center justify-center gap-8 relative
+              className={`w-full py-8 px-4 rounded-3xl border-4 transition-all duration-300 flex flex-col items-center justify-center gap-6 relative
               ${feedback === 'correct' ? 'border-green-400 bg-green-50' : 
                 feedback === 'wrong' ? 'border-red-400 bg-red-50 animate-shake' : 
                 'border-slate-100 bg-slate-50'}`}
@@ -210,7 +213,7 @@ export default function App() {
                     setUserInput(val);
                   }}
                   disabled={feedback === 'correct'}
-                  className={`w-40 text-center text-5xl font-black p-5 rounded-3xl outline-none transition-all no-spinner
+                  className={`w-36 text-center text-4xl font-black p-4 rounded-3xl outline-none transition-all no-spinner
                     ${feedback === 'wrong' ? 'text-red-600 bg-red-100' : 'bg-white text-slate-800 shadow-md focus:ring-4 focus:ring-indigo-200'}`}
                   placeholder="?"
                 />
@@ -218,17 +221,17 @@ export default function App() {
 
               {feedback === 'correct' && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-green-50/95 rounded-3xl animate-pop-in">
-                  <img src={illustrationUrl} alt="Beloning" className="w-32 h-32 rounded-full mb-4 bg-white p-3 shadow-lg border-2 border-green-200" />
-                  <p className="text-green-600 font-black text-xl uppercase tracking-widest text-center px-4">Goed gedaan!</p>
+                  <img src={illustrationUrl} alt="Beloning" className="w-24 h-24 rounded-full mb-3 bg-white p-2 shadow-lg border-2 border-green-200" />
+                  <p className="text-green-600 font-black text-lg uppercase tracking-widest text-center px-4">Goed gedaan!</p>
                 </div>
               )}
 
               {feedback === 'wrong' && (
-                <p className="text-red-500 font-bold animate-pulse text-center">Probeer het nog eens!</p>
+                <p className="text-red-500 text-sm font-bold animate-pulse text-center">Probeer het nog eens!</p>
               )}
             </div>
 
-            <div className="w-full flex gap-4">
+            <div className="w-full flex gap-3">
               {feedback !== 'correct' ? (
                 <>
                   <button onClick={handleCheck} className="flex-[2] bg-indigo-600 text-white py-4 rounded-2xl font-black text-sm shadow-lg hover:bg-indigo-700 active:scale-95 transition-all">
