@@ -3,8 +3,7 @@ import { Trophy, RefreshCw, ArrowRight, Target, Plus, X, Home, Minus, Divide } f
 
 /**
  * REKEN CHALLENGE - Educatieve app voor kinderen
- * Optimalisatie: De titel in de header wordt verborgen tijdens gameplay
- * om meer verticale ruimte vrij te maken op mobiele schermen.
+ * Update: Numeriek toetsenbord geforceerd en invoer wissen bij fout.
  */
 
 export default function App() {
@@ -71,7 +70,7 @@ export default function App() {
   };
 
   const handleCheck = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!userInput || feedback === 'correct') return;
 
     const currentQ = questions[currentIndex];
@@ -108,14 +107,21 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
+  // Functie om input te legen als er een fout is gemaakt en de gebruiker opnieuw tikt
+  const handleInputInteraction = () => {
+    if (feedback === 'wrong') {
+      setUserInput('');
+      setFeedback(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
       
-      {/* Sticky Header - De padding en inhoud veranderen op basis van de view */}
+      {/* Sticky Header */}
       <header className={`sticky top-0 z-50 bg-indigo-600 shadow-lg text-white transition-all duration-300`}>
         <div className={`max-w-md mx-auto relative flex flex-col items-center justify-center ${view === 'game' ? 'p-4' : 'p-6'}`}>
           
-          {/* Alleen de reset knop tonen als we niet in het menu zijn */}
           {view !== 'menu' && (
             <button 
               onClick={reset}
@@ -126,7 +132,6 @@ export default function App() {
             </button>
           )}
 
-          {/* Titel verbergen als de game gestart is */}
           {view !== 'game' && (
             <h1 className="text-2xl font-black tracking-tight flex items-center justify-center gap-2 animate-fade-in">
               <Target className="w-6 h-6 text-yellow-300" />
@@ -134,7 +139,6 @@ export default function App() {
             </h1>
           )}
 
-          {/* Vraag teller compacter weergeven tijdens gameplay */}
           {view === 'game' && (
             <div className="inline-block bg-indigo-500 px-4 py-1 rounded-full text-xs font-bold border border-indigo-400 animate-fade-in">
               Vraag {currentIndex + 1} van 10
@@ -151,53 +155,28 @@ export default function App() {
           <div className="space-y-4 pb-10">
             <p className="text-slate-500 text-center font-bold uppercase tracking-wider text-[10px] mb-4">Kies een categorie</p>
             
-            <button onClick={() => startGame('addition-20')} className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-green-300 active:scale-[0.98]">
-              <div className="text-left pr-2">
-                <h3 className="text-sm font-bold text-slate-800 leading-tight">Optellen (20)</h3>
-                <p className="text-[10px] text-slate-500 mt-0.5">Sommen tot 20</p>
-              </div>
-              <div className="bg-green-500 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0"><Plus size={18} strokeWidth={3} /></div>
-            </button>
-
-            <button onClick={() => startGame('addition-100')} className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-emerald-300 active:scale-[0.98]">
-              <div className="text-left pr-2">
-                <h3 className="text-sm font-bold text-slate-800 leading-tight">Optellen (100)</h3>
-                <p className="text-[10px] text-slate-500 mt-0.5">Sommen tot 100</p>
-              </div>
-              <div className="bg-emerald-500 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0"><Plus size={18} strokeWidth={3} /></div>
-            </button>
-
-            <button onClick={() => startGame('addition-200')} className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-teal-300 active:scale-[0.98]">
-              <div className="text-left pr-2">
-                <h3 className="text-sm font-bold text-slate-800 leading-tight">Optellen (200)</h3>
-                <p className="text-[10px] text-slate-500 mt-0.5">Sommen tot 200</p>
-              </div>
-              <div className="bg-teal-600 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0"><Plus size={18} strokeWidth={3} /></div>
-            </button>
-
-            <button onClick={() => startGame('minus-100')} className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-orange-300 active:scale-[0.98]">
-              <div className="text-left pr-2">
-                <h3 className="text-sm font-bold text-slate-800 leading-tight">Aftrekken (100)</h3>
-                <p className="text-[10px] text-slate-500 mt-0.5">Min-sommen tot 100</p>
-              </div>
-              <div className="bg-orange-500 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0"><Minus size={18} strokeWidth={3} /></div>
-            </button>
-
-            <button onClick={() => startGame('multiplication')} className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-blue-300 active:scale-[0.98]">
-              <div className="text-left pr-2">
-                <h3 className="text-sm font-bold text-slate-800 leading-tight">Vermenigvuldigen</h3>
-                <p className="text-[10px] text-slate-500 mt-0.5">Tafels 1 tot 12</p>
-              </div>
-              <div className="bg-blue-500 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0"><X size={18} strokeWidth={3} /></div>
-            </button>
-
-            <button onClick={() => startGame('division-12')} className="w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all hover:border-purple-300 active:scale-[0.98]">
-              <div className="text-left pr-2">
-                <h3 className="text-sm font-bold text-slate-800 leading-tight">Delen</h3>
-                <p className="text-[10px] text-slate-500 mt-0.5">Tot 12 ÷ 12</p>
-              </div>
-              <div className="bg-purple-500 text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0"><Divide size={18} strokeWidth={3} /></div>
-            </button>
+            {[
+              { id: 'addition-20', label: 'Optellen (20)', sub: 'Sommen tot 20', icon: Plus, color: 'bg-green-500', border: 'hover:border-green-300' },
+              { id: 'addition-100', label: 'Optellen (100)', sub: 'Sommen tot 100', icon: Plus, color: 'bg-emerald-500', border: 'hover:border-emerald-300' },
+              { id: 'addition-200', label: 'Optellen (200)', sub: 'Sommen tot 200', icon: Plus, color: 'bg-teal-600', border: 'hover:border-teal-300' },
+              { id: 'minus-100', label: 'Aftrekken (100)', sub: 'Min-sommen tot 100', icon: Minus, color: 'bg-orange-500', border: 'hover:border-orange-300' },
+              { id: 'multiplication', label: 'Vermenigvuldigen', sub: 'Tafels 1 tot 12', icon: X, color: 'bg-blue-500', border: 'hover:border-blue-300' },
+              { id: 'division-12', label: 'Delen', sub: 'Tot 12 ÷ 12', icon: Divide, color: 'bg-purple-500', border: 'hover:border-purple-300' }
+            ].map((cat) => (
+              <button 
+                key={cat.id}
+                onClick={() => startGame(cat.id)} 
+                className={`w-full group flex items-center justify-between p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl transition-all ${cat.border} active:scale-[0.98]`}
+              >
+                <div className="text-left pr-2">
+                  <h3 className="text-sm font-bold text-slate-800 leading-tight">{cat.label}</h3>
+                  <p className="text-[10px] text-slate-500 mt-0.5">{cat.sub}</p>
+                </div>
+                <div className={`${cat.color} text-white p-2 rounded-xl group-hover:rotate-6 transition-transform shrink-0`}>
+                  <cat.icon size={18} strokeWidth={3} />
+                </div>
+              </button>
+            ))}
           </div>
         )}
 
@@ -220,9 +199,16 @@ export default function App() {
               <form onSubmit={handleCheck} className="w-full flex justify-center">
                 <input
                   autoFocus
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={userInput}
-                  onChange={(e) => setUserInput(e.target.value)}
+                  onClick={handleInputInteraction}
+                  onFocus={handleInputInteraction}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    setUserInput(val);
+                  }}
                   disabled={feedback === 'correct'}
                   className={`w-40 text-center text-5xl font-black p-5 rounded-3xl outline-none transition-all no-spinner
                     ${feedback === 'wrong' ? 'text-red-600 bg-red-100' : 'bg-white text-slate-800 shadow-md focus:ring-4 focus:ring-indigo-200'}`}
